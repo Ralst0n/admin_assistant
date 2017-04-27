@@ -1,0 +1,25 @@
+#DIRECTORIES
+#make sure all directories have double backslashes between them or they will not work.
+#i.e: "C:\\User\\me\\fileineed.txt"
+cert_tracker: "C:\\Users\\rlawson\\code\\admiss\\files\\cert_tracker.xlsm"
+invoice_tracker: "R:\\Version Control\\xl_invoice_form\\invoice_tracker.xlsm"
+invoice_numbers: "C:\\Users\\rlawson\\code\\admiss\\files\\invoice_num_email.html"
+
+user: "Ralston"
+
+greetings:
+  -"hello"
+  -"hey"
+  -"hi"
+  -"howdy"
+  -"what's up"
+  -"how are ya"
+  -"hey there"
+  -"yo"
+  -"que pasa"
+  -"hola"
+  -"buenos dias"
+  -"buenas noche"
+  -"que tal"
+  -"digame"
+  -"alo"
