@@ -3,8 +3,9 @@ from invoice_wiz import InvoiceManager
 from chatbot import *
 import sys
 import os
-import time
+import datetime
 import yaml
+import datetime
 
 with open("config.yml", "r") as ymlfile:
     config = yaml.load(ymlfile)
@@ -25,9 +26,9 @@ class Menu:
 
     def display_menu(self):
             print("""
-    How can I help you?
+    What can I do for you?
 
-    1. Start invoice numbers email Request Invoice Numbers
+    1. Open Request Invoice Numbers Form
     2. Update Invoice Tracker
     3. Start An Invoice
     4. Create Status Change Form
@@ -36,7 +37,22 @@ class Menu:
     7. Exit program
 
     """)
+    def greet(self):
+        os.system('cls')
+        ctime = datetime.datetime.now().hour
+        if ctime < 12:
+            print("Good Morning, {}".format(config["user"]))
+        elif ctime >12 and ctime < 15:
+            print("Good Afternoon, {}".format(config["user"]))
+        elif ctime == 15:
+            print("Hey, {}! It's almost quittin time!".format(config["user"]))
+        elif ctime > 15:
+            print("\n\n\nMake it fast, {}, I'm trying to get out of here on time".format(config["user"]))
+            time.sleep(1)
+        time.sleep(1)
+        self.run()
 
+        print('''''' )
     def run(self):
         '''Display menu and respond to choice.'''
         while True:
@@ -56,6 +72,8 @@ class Menu:
                 input("\n\n\n\n\npress enter to return to the menu")
             elif choice.lower() in config["greetings"]:
                 self.chatbot()
+            elif choice.lower() == "bye":
+                self.quit()
             else:
                 print("{} is not a valid option".format(choice))
 
@@ -64,7 +82,14 @@ class Menu:
 
     def quit(self):
         os.system('cls')
-        print("See you next time!")
+        ctime = datetime.datetime.now().hour
+        if ctime > 15:
+            if datetime.datetime.now().weekday() > 3:
+                print("See you next week!")
+            else:
+                print("See you tomorrow!")
+        else:
+            print("Hasta Luego!")
         time.sleep(1)
         sys.exit(0)
 
@@ -98,4 +123,4 @@ class Menu:
 
 
 if __name__ == "__main__":
-    Menu().run()
+    Menu().greet()
