@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 class Directory:
     '''creates a directory in a location based on information provided by the user'''
@@ -9,7 +10,8 @@ class Directory:
         self.fname = first_name
         self.lname = last_name
         self.fullpath = os.path.join(path, "{}, {}".format(last_name, first_name))
-
+        #keep track of if the person wanted to create a status change form but didn't create directory first
+        self.statuschange = False
 
 class FileSystem:
 
@@ -21,24 +23,34 @@ class FileSystem:
         fname, lname = self.get_name()
         self.directory = Directory(path, fname, lname)
         self.add_directory()
-        self.run_again()
 
-    def update_status(self):
+    def gather_employee_info(self):
+        '''find out for whom we are creating files.'''
         path = self.get_path()
         fname, lname = self.get_name()
         self.directory = Directory(path, fname, lname)
-        self.add_status_change()
+
+    def update_status(self):
+        self.gather_employee_info()
+        if self.verify_directory():
+            self.add_status_change()
+        else:
+            self.statuschange = True
+            print(f"You must create a directory for {self.directory.fname} {self.directory.lname} before creating a status change form")
+            time.sleep(2)
+            self.add_directory()
 
     def add_status_change(self):
-            template = r"R:\Version Control\xl_invoice_form\Status Change Form (New Hire).xlsm"
-            status_change_folder = os.path.join(self.directory.fullpath, "Status Change" )
-            shutil.copy2(template, status_change_folder)
-            change_type = self.status_change_type()
-            os.chdir(status_change_folder)
-            status_form_name = "Status Change Form ({}).xlsm".format(change_type)
-            os.rename("Status Change Form (New Hire).xlsm", status_form_name  )
-            print("Opening {} in Excel".format(status_form_name))
-            os.startfile(status_form_name)
+        '''Grabs a status change template form and adds it to the folder of the current employee'''
+        template = r"P:\Version Control\xl_invoice_form\Status Change Form (New Hire).xlsm"
+        status_change_folder = os.path.join(self.directory.fullpath, "Status Change" )
+        shutil.copy2(template, status_change_folder)
+        change_type = self.status_change_type()
+        os.chdir(status_change_folder)
+        status_form_name = "Status Change Form ({}).xlsm".format(change_type)
+        os.rename("Status Change Form (New Hire).xlsm", status_form_name  )
+        print("Opening {} in Excel".format(status_form_name))
+        os.startfile(status_form_name)
 
     def status_change_prompt(self):
         '''ask users if they'd like to add a status change form whenever
@@ -54,7 +66,7 @@ class FileSystem:
                          "3": "Layoff",
                          "4": "Re-hire",
                          "5": "Other"}
-        print('''What type of status change is this?
+        print('''What type of status change is this?n
         1. New Hire
         2. Wage Increase :)
         3. Layoff :(
@@ -75,15 +87,15 @@ class FileSystem:
             print("Returning to main menu")
 
     def get_path(self):
-        '''city defaults to kop if anything but pgh is entered'''
+        '''city must be one of Prudent's business cities in Pennsylvania '''
         while True:
             city = input("Is the employee in KOP or Pitt? \n>")
             #return kop dir if a kop term is used
             if city.lower() in ["kop", "king of prussia"]:
-                return r"R:\012 - EMPLOYMENT\PERSONNEL FILE\ACTIVE EMPLOYEES\KOP\\"
+                return r"P:\012 - EMPLOYMENT\PERSONNEL FILE\ACTIVE EMPLOYEES\KOP\\"
             #return pgh dir if a pgh term is used
             elif city in ["pgh", "pitt", "pit", "pittsburgh"]:
-                return r"R:\012 - EMPLOYMENT\PERSONNEL FILE\ACTIVE EMPLOYEES\PGH\\"
+                return r"P:\012 - EMPLOYMENT\PERSONNEL FILE\ACTIVE EMPLOYEES\PGH\\"
 
     def get_name(self):
         '''prompt for employee name. return 2 element list first name, last name'''
@@ -96,29 +108,32 @@ class FileSystem:
                     name.append(x.upper())
                 return name
 
+    def verify_directory(self):
+        '''verifies the employee has a directory'''
+        return os.path.isdir(self.directory.fullpath)
+
+
     def add_directory(self):
-        '''verifies if the employee has a directory, if so it adds necessary folders,
-           if not, adds directory and requests to add status change form.'''
-        #name the directory last name, first name
-        new_directory = os.path.join(self.directory.path, "{}, {}".format(self.directory.lname, self.directory.fname))
-        #if there is no directory for that person, create one and enter it
-        if not os.path.isdir(new_directory):
-           print("Creating directory... " + new_directory)
-           os.makedirs(new_directory)
-           os.chdir(new_directory)
-           print(os.getcwd())
+        '''create new directory for employee if they don't have one'''
+        if not self.verify_directory():
+           print("Creating directory... " + self.directory.fullpath)
+           os.makedirs(self.directory.fullpath)
+           os.chdir(self.directory.fullpath)
 
         #add each of the following folders to the directory if they don't exist already
         folders = ["Correspondence", "Emergency Contact", "New Hire Documents", "Status Change", "Wage Acknowledgement", "Certifications", "Equipment"]
         changes = False
         for i in folders:
-            if os.path.isdir(os.path.join(new_directory, i)):
+            if os.path.isdir(os.path.join(self.directory.fullpath, i)):
                 next
             else:
-                os.makedirs(os.path.join(new_directory, i))
+                os.makedirs(os.path.join(self.directory.fullpath, i))
                 print("Added " + i + " folder")
                 changes = True
-        if changes:
+        if changes and self.statuschange:
+            '''if the request comes from an original status form request doesn't ask to update status form goes right into it'''
+            self.add_status_change()
+        elif changes:
             self.status_change_prompt()
         if not changes:
             print("{} {} already has a Personnel folder. No changes made.".format(self.directory.fname.capitalize(), self.directory.lname.capitalize()))
