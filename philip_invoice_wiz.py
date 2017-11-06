@@ -3,7 +3,7 @@ import shutil
 
 class InvoiceManager:
     '''The invoice manager class represents the creation and appropriate filing
-    of an invoice. Through this class you start any standard penndot job invoice'''
+    of an invoice. Through this class you start any standard penndot invoice'''
 
     def __init__(self):
         pass
@@ -14,19 +14,33 @@ class InvoiceManager:
         #make the invoice directory the new working directory and create the next invoice folder there.
         os.chdir(r"S:\FIN"+"\\"+project_num[0]+"\\"+project_num[1]+"\\"+invoice_dir)
         #next_invoice returns year (space) invoice xx i.e. 2017-02-19 Invoice 22
-
+        prev_invoice_dir = self.get_last_directory()
         next_invoice = self.create_next_folder()
+        estimate_number = int(next_invoice.split(" ")[-1])
 
-        os.chdir(os.path.join(os.getcwd(), next_invoice))
-        os.mkdir("Invoice Logs")
 
-        #copy the most up to date invoice workbook into the new folder
-        shutil.copy2(r"R:\Version Control\xl_invoice_form\E0XXXX Part xx Invoice xx.xlsm", os.getcwd())
-
+        six_digit_prudent_number = self.numeric_prudent_number(project_num)
         penndot_number = project_num[-1].split(" ")[-1]
-        invoice_name = penndot_number + " Part 01 " + next_invoice.split(" ", 1)[-1] + ".xlsm"
-        os.rename("E0XXXX Part xx Invoice xx.xlsm", invoice_name)
+        prev_invoice_name = "Inv12.75 {} E{}.xlsm".format(six_digit_prudent_number, estimate_number - 1)
+        os.chdir(os.path.join(os.getcwd(), next_invoice))
+        os.mkdir("Raw Data")
+
+        six_digit_prudent_number = self.numeric_prudent_number(project_num)
+        penndot_number = project_num[-1].split(" ")[-1]
+        invoice_name = "Inv12.75 " + six_digit_prudent_number +" E" + next_invoice.split(" ")[-1] + ".xlsm"
+        previous_path = r"S:\FIN\103\{}\Invoices\{}\{}".format(project_num[1], prev_invoice_dir, prev_invoice_name)
+        if os.path.exists(previous_path):
+            shutil.copy2(previous_path, os.getcwd())
+            os.rename(prev_invoice_name, invoice_name)
+        else:
+            shutil.copy2(r"S:\FIN\103\000\Inv12.75 Job.Num Exx.xlsm", os.getcwd())
+            os.rename("Inv12.75 Job.Num Exx.xlsm", invoice_name)
         os.startfile(invoice_name)
+
+    def numeric_prudent_number(self, project_array):
+        '''returns the 6 digit prudent project number with a . in the middle'''
+        long_num = ".".join(project_array)
+        return long_num.split("-")[0]
 
     def get_project_num(self):
         '''prompt user for number until a valid penndot/prudent project number is given'''
@@ -96,6 +110,19 @@ class InvoiceManager:
         os.mkdir(next_folder_name)
         return (next_folder_name)
 
+    def get_last_directory(self):
+        '''iterate through directories in invoice dir and find the last directory'''
+        max_num = 0
+        max_dir = ""
+        for directory in os.listdir():
+            if directory.split(" ")[-1].isnumeric():
+                num = directory.split(" ")[-1]
+                if int(num) > max_num:
+                    max_num = int(num)
+                    max_dir = directory
+        if max_num > 0:
+            return max_dir
+        return "pass"
 
     def penndot_to_prudent(self, project_number):
         base = r"S:\FIN"
