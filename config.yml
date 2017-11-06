@@ -1,9 +1,9 @@
 #DIRECTORIES
 #make sure all directories have double backslashes between them or they will not work.
 #i.e: "C:\\User\\me\\fileineed.txt"
-cert_tracker: "R:\\Version Control\\xl_invoice_form\\cert_tracker.xlsm"
-invoice_tracker: "R:\\Version Control\\xl_invoice_form\\invoice_tracker.xlsm"
-invoice_numbers: "R:\\Version Control\\xl_invoice_form\\invoice_num_email.html"
+cert_tracker: "P:\\Version Control\\xl_invoice_form\\cert_tracker.xlsm"
+invoice_tracker: "P:\\Version Control\\xl_invoice_form\\invoice_tracker.xlsm"
+invoice_numbers: "P:\\Version Control\\xl_invoice_form\\invoice_num_email.html"
 
 user: "Ralston"
 
