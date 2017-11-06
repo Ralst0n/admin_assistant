@@ -1,5 +1,5 @@
 from makedirectory import FileSystem, Directory
-from invoice_wiz import InvoiceManager
+from philip_invoice_wiz import InvoiceManager
 from chatbot import *
 import sys
 import os
@@ -63,7 +63,7 @@ class Menu:
             self.display_menu()
             choice = input("Enter the number for an option: ")
             #os.system('cls')
-            if choice.isnumeric():
+            if choice.isnumeric() and choice in self.choices:
                 program = self.choices.get(choice)
                 program()
             elif choice.lower() == "help":
