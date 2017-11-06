@@ -5,7 +5,6 @@ import sys
 import os
 import datetime
 import yaml
-import datetime
 
 with open("config.yml", "r") as ymlfile:
     config = yaml.load(ymlfile)
@@ -47,7 +46,7 @@ class Menu:
         elif ctime == 15:
             print("Hey, {}! It's almost quittin time!".format(config["user"]))
         elif ctime > 15:
-            print("\n\n\nMake it fast, {}, I'm trying to get out of here on time".format(config["user"]))
+            print("\n\nMake it fast, {}, I'm trying to get out of here on time".format(config["user"]))
             time.sleep(1)
         time.sleep(1)
         self.run()
@@ -69,7 +68,7 @@ class Menu:
             elif choice.lower() == "help":
                 print('''One day, but today is not that day''')
                 time.sleep(1.5)
-                input("\n\n\n\n\npress enter to return to the menu")
+                input("\n\n\npress enter to return to the menu")
             elif choice.lower() in config["greetings"]:
                 self.chatbot()
             elif choice.lower() == "bye":
